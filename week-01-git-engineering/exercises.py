@@ -10,14 +10,29 @@ def evaluate_attendance_status(attended: int, total: int) -> str:
 
     If total <= 0, return 'NO_SESSIONS'.
     """
-    # TODO: Implement conditional attendance check
-    raise NotImplementedError("Task 1a: Implement evaluate_attendance_status")
+    # TODO: 
+    if total <= 0:
+        return "NO_SESSIONS"
+
+    percentage = (attended/total)*100
+
+    if percentage >= 75:
+        return "ELIGIBLE"
+    elif percentage >= 65:
+        return "WARNING"
+    else:
+        return "SHORTAGE"
+    
 
 
 def safe_parse_float(raw_value: Any, default: float = 0.0) -> float:
     """Convert raw_value to float safely using try/except. Return default on failure."""
-    # TODO: Handle ValueError / TypeError cleanly
-    raise NotImplementedError("Task 1b: Implement safe_parse_float")
+    # TODO:
+    try:
+        return float(raw_value)
+    except Exception:
+        return default
+    
 
 
 def analyze_pod_scores(records: List[Tuple[str, str, float]]) -> Dict[str, Any]:
@@ -28,8 +43,30 @@ def analyze_pod_scores(records: List[Tuple[str, str, float]]) -> Dict[str, Any]:
       - 'high_scorers': List[str] (USNs with score >= 80 using a list comprehension)
       - 'pod_averages': Dict[str, float] (average score per pod rounded to 2 decimals)
     """
-    # TODO: Implement set deduplication, list comprehension filtering, and dict grouping
-    raise NotImplementedError("Task 2: Implement analyze_pod_scores")
+    # TODO: 
+    unique_students = set()
+    for usn , pod , score in records :
+        unique_students.add(usn)
+
+    high_scorers = [usn for usn , pod , score in records if score >= 80]
+
+    pod_scores = {}
+
+    for usn , pod,score in records :
+        pod_scores[pod] = pod_scores.get(pod,[])
+        pod_scores[pod].append(score)
+
+    pod_averages = {
+        pod : round(sum(scores)/len(scores),2)
+        for pod , scores in pod_scores.items()
+
+    }
+
+    return {
+            "unique_student_count"  : len(unique_students),
+            "high_scorers" : high_scorers,
+            "pod_averages" : pod_averages
+        }
 
 
 def summarize_csv_to_json(csv_path: str, json_path: str) -> Dict[str, Any]:
@@ -40,29 +77,70 @@ def summarize_csv_to_json(csv_path: str, json_path: str) -> Dict[str, Any]:
       - 'branches': List[str] (sorted unique branch codes)
       - 'average_score': float (rounded to 2 decimals)
     """
-    # TODO: Use `with open(...)`, `csv.DictReader`, and `json.dump`
-    raise NotImplementedError("Task 3: Implement summarize_csv_to_json")
+    # TODO: 
+    total_students = 0 
+    total_score = 0 
+    branches = []
 
+    with open(csv_path , "r") as file :
+        reader = csv.DictReader(file) 
+
+        for info in reader :
+            total_students += 1 
+            total_score += float(info["score"])
+            branches.append (info["branch"])
+
+    if total_students > 0 :
+       average_score = round(total_score/total_students,2)
+    else :
+        average_score = 0.00
+
+    branches = sorted(set(branches))
+
+    summary = {
+        "total_students" : total_students ,
+        "branches" : branches ,
+        "average_score" : average_score 
+    }
+
+    with open(json_path,"w") as file :
+        json.dump(summary,file,indent=4)
+
+    return summary
 
 class StudentRecord:
     """Tracks weekly evaluation scores for a single DSC recruit."""
 
     def __init__(self, usn: str, name: str):
         """Initialize record with uppercase USN, name, and empty scores list."""
-        # TODO: Store self.usn, self.name, self.scores = []
-        raise NotImplementedError("Task 4: Initialize StudentRecord")
+        # TODO: 
+        self.name = name
+        self.scores = []
+        self.usn = usn.upper()
+
+
 
     def add_score(self, score: float) -> None:
         """Append a score (must be between 0 and 100; raise ValueError otherwise)."""
-        # TODO: Validate range and append to self.scores
-        raise NotImplementedError("Task 4: Implement add_score")
+        # TODO: 
+        if score < 0 or score > 100:
+            raise ValueError("scoremust be betweeen 0 and 100")
 
+        else :
+            self.scores.appened(score)
     def average(self) -> float:
         """Return average score rounded to 2 decimals, or 0.0 if no scores exist."""
-        # TODO: Compute average safely
-        raise NotImplementedError("Task 4: Implement average")
+        # TODO:
+
+        if len(self.scores) == 0:
+            return 0.0 
+
+        else:
+            avg = sum(self.scores)/len(self.scores)
+        return round(avg,2)
+
 
     def is_passing(self, threshold: float = 50.0) -> bool:
         """Return True if average() >= threshold, else False."""
-        # TODO: Implement threshold check
-        raise NotImplementedError("Task 4: Implement is_passing")
+        # TODO: 
+        return self.average()>= threshold
