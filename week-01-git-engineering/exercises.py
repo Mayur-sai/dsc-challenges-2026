@@ -44,29 +44,8 @@ def analyze_pod_scores(records: List[Tuple[str, str, float]]) -> Dict[str, Any]:
       - 'pod_averages': Dict[str, float] (average score per pod rounded to 2 decimals)
     """
     # TODO: 
-    unique_students = set()
-    for usn , pod , score in records :
-        unique_students.add(usn)
-
-    high_scorers = [usn for usn , pod , score in records if score >= 80]
-
-    pod_scores = {}
-
-    for usn , pod,score in records :
-        pod_scores[pod] = pod_scores.get(pod,[])
-        pod_scores[pod].append(score)
-
-    pod_averages = {
-        pod : round(sum(scores)/len(scores),2)
-        for pod , scores in pod_scores.items()
-
-    }
-
-    return {
-            "unique_student_count"  : len(unique_students),
-            "high_scorers" : high_scorers,
-            "pod_averages" : pod_averages
-        }
+    
+ 
 
 
 def summarize_csv_to_json(csv_path: str, json_path: str) -> Dict[str, Any]:
